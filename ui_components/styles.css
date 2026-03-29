@@ -1,0 +1,228 @@
+/* ============================================
+   Lumio Shared Design System
+   Import this in your app's main CSS file:
+   @import "ui_components/styles.css";
+   ============================================ */
+
+/* ---------- Palette (CSS custom properties) ---------- */
+:root {
+  --background: #0c0c0c;
+  --foreground: #ffffff;
+  --card: #1f1f1f;
+  --card-foreground: #ffffff;
+  --popover: #1f1f1f;
+  --popover-foreground: #ffffff;
+  --primary: #7966ff;
+  --primary-foreground: #ffffff;
+  --secondary: #22cfff;
+  --secondary-foreground: #000000;
+  --muted: #141414;
+  --muted-foreground: #a9a9a9;
+  --accent: #1f1f1f;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4b44;
+  --destructive-foreground: #ffffff;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #7966ff;
+  --radius: 1.25rem;
+  --success: #22cfff;
+  --success-foreground: #000000;
+  --warning: #7966ff;
+  --warning-foreground: #ffffff;
+}
+
+/* ---------- Liquid Card ---------- */
+.liquid-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.063);
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background-clip: padding-box;
+}
+
+.liquid-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.05) 7%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.05) 67%,
+    rgba(255, 255, 255, 0.12) 87%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ---------- Liquid Card Strong ---------- */
+.liquid-card-strong {
+  position: relative;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background-clip: padding-box;
+}
+
+.liquid-card-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1.5px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.1) 7%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(255, 255, 255, 0.1) 67%,
+    rgba(255, 255, 255, 0.25) 87%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ---------- Liquid Input ---------- */
+.liquid-input {
+  position: relative;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.liquid-input::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 7%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.06) 67%,
+    rgba(255, 255, 255, 0.18) 87%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.liquid-input:focus-within::before {
+  background: linear-gradient(
+    160deg,
+    rgba(121, 102, 255, 0.4) 0%,
+    rgba(121, 102, 255, 0.15) 7%,
+    rgba(121, 102, 255, 0) 50%,
+    rgba(121, 102, 255, 0.15) 67%,
+    rgba(121, 102, 255, 0.4) 87%
+  );
+}
+
+/* ---------- Liquid Button ---------- */
+.liquid-card-btn {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background-clip: padding-box;
+}
+
+.liquid-card-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.05) 7%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 0.05) 67%,
+    rgba(255, 255, 255, 0.12) 87%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ---------- Autofill fix ---------- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: rgba(121, 102, 255, 0.3);
+  color: #ffffff;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* ---------- Modal animation ---------- */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

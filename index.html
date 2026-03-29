@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumio API — Backoffice</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#252830;--border:#2e3140;--text:#e4e6eb;--text2:#9ca0ab;--accent:#6c5ce7;--accent2:#a29bfe;--green:#00b894;--red:#ff6b6b;--orange:#fdcb6e;--radius:10px;--shadow:0 4px 24px rgba(0,0,0,.3)}
+[data-theme="light"]{--bg:#f0f2f5;--surface:#fff;--surface2:#f8f9fa;--border:#e0e3e8;--text:#1a1d27;--text2:#6b7280;--shadow:0 4px 24px rgba(0,0,0,.08)}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.app{max-width:1200px;margin:0 auto;padding:20px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;margin-bottom:24px;border-bottom:1px solid var(--border)}
+header h1{font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .controls{display:flex;gap:12px;align-items:center}
+.badge{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600}
+.badge.ok{background:#00b89422;color:var(--green)}
+.badge.err{background:#ff6b6b22;color:var(--red)}
+.badge.pending{background:#fdcb6e22;color:var(--orange)}
+button{cursor:pointer;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;padding:8px 16px;transition:all .2s}
+.btn{background:var(--accent);color:#fff}
+.btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-red{background:var(--red);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px}
+.tab{padding:10px 18px;border-radius:var(--radius);background:transparent;color:var(--text2);font-weight:600;white-space:nowrap;border:1px solid transparent}
+.tab.active{background:var(--surface);color:var(--accent);border-color:var(--border);box-shadow:var(--shadow)}
+.tab:hover:not(.active){color:var(--text)}
+.panel{display:none}
+.panel.active{display:block}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{font-size:15px;font-weight:700;margin-bottom:12px;color:var(--accent2)}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.row>.card{flex:1;min-width:280px}
+
+/* Forms */
+input,textarea,select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border .2s}
+input:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:60px}
+label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.form-group{margin-bottom:12px}
+.form-row{display:flex;gap:12px}
+.form-row>*{flex:1}
+
+/* Response area */
+.response{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:12px;font-family:'Cascadia Code','Fira Code',monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;color:var(--text2);line-height:1.5}
+
+/* Chat */
+.chat-box{max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:12px;background:var(--surface2);border-radius:8px;margin-bottom:12px}
+.msg{padding:10px 14px;border-radius:12px;max-width:85%;font-size:14px;line-height:1.5}
+.msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.msg.assistant{align-self:flex-start;background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg .sources{font-size:11px;color:var(--text2);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.chat-input{display:flex;gap:8px}
+.chat-input input{flex:1}
+
+/* Company list */
+.company-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--surface2);cursor:pointer;transition:border .2s}
+.company-item:hover,.company-item.selected{border-color:var(--accent)}
+.company-item .name{font-weight:600}
+.company-item .meta{font-size:12px;color:var(--text2)}
+
+/* Doc list */
+.doc-item{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:var(--surface2)}
+.doc-item .icon{font-size:20px}
+.doc-item .info{flex:1}
+.doc-item .info .name{font-weight:600;font-size:13px}
+.doc-item .info .detail{font-size:11px;color:var(--text2)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.stat .value{font-size:24px;font-weight:700;color:var(--accent2)}
+.stat .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+
+/* Toggle */
+.toggle{position:relative;width:44px;height:24px;background:var(--border);border-radius:12px;cursor:pointer;transition:background .2s}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.toggle.on::after{transform:translateX(20px)}
+
+.loading{opacity:.6;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+
+/* Markdown tables inside chat */
+.msg.assistant table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.msg.assistant th,.msg.assistant td{padding:6px 10px;border:1px solid var(--border);text-align:left}
+.msg.assistant th{background:var(--surface2);font-weight:600;white-space:nowrap}
+.msg.assistant tr:nth-child(even){background:rgba(255,255,255,.03)}
+[data-theme="light"] .msg.assistant tr:nth-child(even){background:rgba(0,0,0,.03)}
+.msg.assistant p{margin:4px 0}
+.msg.assistant ul,.msg.assistant ol{margin:4px 0 4px 18px}
+.msg.assistant h3,.msg.assistant h4{margin:10px 0 4px;font-size:14px}
+.msg.assistant code{background:var(--surface2);padding:1px 5px;border-radius:4px;font-size:12px}
+.msg.assistant strong{color:var(--accent2)}
+
+/* Streaming cursor */
+@keyframes blink{50%{opacity:0}}
+.streaming-cursor::after{content:'▍';animation:blink 1s step-end infinite;color:var(--accent)}
+.streaming-cursor{width:85%;min-height:40px}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Lumio Backoffice</h1>
+    <div class="controls">
+      <span id="health-badge" class="badge pending">checking...</span>
+      <span id="auth-badge" class="badge err" style="cursor:pointer" onclick="showTab('auth');document.querySelector('.tab[onclick*=auth]').classList.add('active')">not logged in</span>
+      <div class="toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></div>
+      <input id="api-url" value="http://localhost:8000" style="width:220px;padding:6px 10px;font-size:12px" onchange="checkHealth()">
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab" onclick="showTab('auth')">Auth</button>
+    <button class="tab active" onclick="showTab('companies')">Companies</button>
+    <button class="tab" onclick="showTab('documents')">Documents</button>
+    <button class="tab" onclick="showTab('chat')">Chat</button>
+    <button class="tab" onclick="showTab('general-chat')">General Chat</button>
+    <button class="tab" onclick="showTab('web-search')">Client Discovery</button>
+    <button class="tab" onclick="showTab('rankings')">Rankings</button>
+    <button class="tab" onclick="showTab('analytics')">Analytics</button>
+    <button class="tab" onclick="showTab('settings')">Settings</button>
+    <button class="tab" onclick="showTab('graph')">Graph</button>
+    <button class="tab" onclick="showTab('landing')">Landing</button>
+    <button class="tab" onclick="showTab('onboarding')">Onboarding</button>
+  </div>
+
+  <!-- AUTH -->
+  <div id="auth" class="panel">
+    <div class="row">
+      <div class="card" style="max-width:400px">
+        <h3>Login</h3>
+        <div class="form-group"><label>Email</label><input id="login-email" type="email" placeholder="user@example.com"></div>
+        <div class="form-group"><label>Password</label><input id="login-pass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn" onclick="doLogin()">Login</button>
+        <div id="login-response" class="response" style="display:none"></div>
+      </div>
+      <div class="card" style="max-width:400px">
+        <h3>Register</h3>
+        <div class="form-group"><label>Email</label><input id="reg-email" type="email" placeholder="user@example.com"></div>
+        <div class="form-group"><label>Display Name</label><input id="reg-name" placeholder="John Doe"></div>
+        <div class="form-group"><label>Password</label><input id="reg-pass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doRegister()"></div>
+        <button class="btn" onclick="doRegister()">Register</button>
+        <div id="reg-response" class="response" style="display:none"></div>
+      </div>
+    </div>
+    <div class="card" id="auth-info-card" style="display:none">
+      <h3>Logged In</h3>
+      <div class="row" style="align-items:center;gap:16px">
+        <div>
+          <div style="font-size:14px;font-weight:600" id="auth-user-name"></div>
+          <div style="font-size:12px;color:var(--text2)" id="auth-user-email"></div>
+        </div>
+        <button class="btn-sm btn-red" onclick="doLogout()" style="margin-left:auto">Logout</button>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label>JWT Token</label>
+        <input id="auth-token-display" readonly style="font-family:monospace;font-size:11px">
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPANIES -->
+  <div id="companies" class="panel active">
+    <div class="row">
+      <div class="card" style="flex:0 0 340px">
+        <h3>Create Company</h3>
+        <div class="form-group"><label>Name</label><input id="c-name" placeholder="Acme Corp"></div>
+        <div class="form-group"><label>P.IVA</label><input id="c-piva" placeholder="12345678901" maxlength="11"></div>
+        <div class="form-group"><label>Industry</label><input id="c-industry" placeholder="Tech"></div>
+        <div class="form-group"><label>Description</label><textarea id="c-desc" rows="2" placeholder="Optional description"></textarea></div>
+        <div class="form-group"><label>Website</label><input id="c-website" placeholder="https://..."></div>
+        <button class="btn" onclick="createCompany()">Create Company</button>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Companies <button class="btn-sm btn-outline" onclick="loadCompanies()" style="margin-left:8px">Refresh</button></h3>
+        <div class="form-group"><input id="c-search" placeholder="Search..." oninput="loadCompanies()"></div>
+        <div id="company-list"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Company Detail
+        <button class="btn-sm btn-green" onclick="enrichCompany()" style="margin-left:8px" id="enrich-btn" disabled>Enrich (P.IVA)</button>
+      </h3>
+      <div id="company-detail" class="response">Select a company above</div>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div id="documents" class="panel">
+    <div class="row">
+      <div class="card" style="flex:0 0 340px">
+        <h3>Upload Document</h3>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Supports PDF, DOCX, XLSX, PPTX, TXT, audio, video</p>
+        <div class="form-group"><label>Company</label><select id="d-company" onchange="loadDocuments()"></select></div>
+        <div class="form-group"><label>File</label><input type="file" id="d-file" multiple></div>
+        <button class="btn" onclick="uploadDocs()">Upload</button>
+        <div id="upload-status" class="response" style="display:none"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Documents <button class="btn-sm btn-outline" onclick="loadDocuments()" style="margin-left:8px">Refresh</button></h3>
+        <div id="doc-list"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Document Detail</h3>
+      <div id="doc-detail" class="response">Select a document above</div>
+    </div>
+  </div>
+
+  <!-- Document Viewer Modal -->
+  <div id="doc-viewer-overlay" onclick="if(event.target===this)closeDocViewer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:90%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.4)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div>
+          <span id="doc-viewer-icon" style="font-size:20px;margin-right:8px"></span>
+          <strong id="doc-viewer-title" style="font-size:15px"></strong>
+          <span id="doc-viewer-badge" class="badge" style="margin-left:8px"></span>
+        </div>
+        <button class="btn-sm btn-outline" onclick="closeDocViewer()">&times; Close</button>
+      </div>
+      <div id="doc-viewer-body" style="flex:1;overflow-y:auto;padding:20px;font-family:'Cascadia Code','Fira Code',monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;color:var(--text)"></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="panel">
+    <div class="row">
+      <div class="card" style="flex:0 0 300px">
+        <h3>Sessions</h3>
+        <div class="form-group"><label>Company</label><select id="chat-company" onchange="onChatCompanyChange()"></select></div>
+        <button class="btn btn-sm" onclick="createChatSession()" style="margin-bottom:12px">New Session</button>
+        <div id="session-list"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Chat <span id="chat-title" style="font-weight:400;color:var(--text2);font-size:13px"></span></h3>
+        <div id="chat-box" class="chat-box">
+          <div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Create or select a session to start chatting</div>
+        </div>
+        <div class="chat-input">
+          <input id="chat-msg" placeholder="Ask about company documents..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn" onclick="sendChat()" id="chat-send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERAL CHAT -->
+  <div id="general-chat" class="panel">
+    <div class="row">
+      <div class="card" style="flex:0 0 300px">
+        <h3>Sessions</h3>
+        <button class="btn btn-sm" onclick="createGCSession()" style="margin-bottom:12px">New Session</button>
+        <div id="gc-session-list"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>General Chat <span id="gc-title" style="font-weight:400;color:var(--text2);font-size:13px"></span></h3>
+        <div id="gc-box" class="chat-box">
+          <div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Create or select a session to start chatting</div>
+        </div>
+        <div class="chat-input">
+          <input id="gc-msg" placeholder="Ask anything across all companies..." onkeydown="if(event.key==='Enter')sendGC()">
+          <button class="btn" onclick="sendGC()" id="gc-send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEB SEARCH -->
+  <div id="web-search" class="panel">
+    <div class="row">
+      <div class="card" style="flex:0 0 300px">
+        <h3>Sessions</h3>
+        <button class="btn btn-sm" onclick="createWSSession()" style="margin-bottom:12px">New Session</button>
+        <div id="ws-session-list"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Client Discovery <span id="ws-title" style="font-weight:400;color:var(--text2);font-size:13px"></span></h3>
+        <div id="ws-box" class="chat-box">
+          <div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Describe the type of clients you're looking for</div>
+        </div>
+        <div class="chat-input">
+          <input id="ws-msg" placeholder="Find manufacturing companies in Lombardy..." onkeydown="if(event.key==='Enter')sendWS()">
+          <button class="btn" onclick="sendWS()" id="ws-send-btn">Send</button>
+        </div>
+        <div id="ws-vendors" style="display:none;margin-top:12px">
+          <h3 style="font-size:13px;margin-bottom:8px">Discovered Prospects</h3>
+          <div id="ws-vendor-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKINGS -->
+  <div id="rankings" class="panel">
+    <div class="card">
+      <h3>Vendor Dependency Rankings <button class="btn-sm btn-outline" onclick="loadRankings()" style="margin-left:8px">Refresh</button></h3>
+      <div id="ranking-list"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>Dependency Detail</h3>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Select a company above to see vendor breakdown</p>
+      <div id="dependency-detail"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div id="analytics" class="panel">
+    <!-- Credit Balance -->
+    <div class="card">
+      <h3>Lumio Credits</h3>
+      <div id="credit-info" class="row" style="gap:12px">
+        <div class="stat"><div class="value" id="cr-remaining">--</div><div class="label">Credits Remaining</div></div>
+        <div class="stat"><div class="value" id="cr-used">--</div><div class="label">Used This Month</div></div>
+        <div class="stat"><div class="value" id="cr-total">--</div><div class="label">Monthly Allowance</div></div>
+        <div class="stat"><div class="value" id="cr-plan">--</div><div class="label">Current Plan</div></div>
+      </div>
+      <div id="credit-bar-wrap" style="margin-top:14px;background:var(--surface2);border-radius:6px;height:12px;overflow:hidden">
+        <div id="credit-bar" style="height:100%;border-radius:6px;background:var(--accent);transition:width .5s;width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-top:4px">
+        <span>1 Lumio Credit = 1,000 tokens</span>
+        <span id="cr-pct">0% used</span>
+      </div>
+    </div>
+
+    <!-- Token Summary -->
+    <div class="card">
+      <h3>Token Usage <span style="font-weight:400;font-size:13px;color:var(--text2)">
+        <label style="display:inline;margin-left:12px">Days:</label>
+        <input id="a-days" type="number" value="30" style="width:60px;padding:4px 8px;font-size:12px;display:inline" onchange="loadAnalytics()">
+      </span></h3>
+      <div id="analytics-stats" class="stats" style="margin-top:12px"></div>
+    </div>
+
+    <!-- By Endpoint table -->
+    <div class="row">
+      <div class="card">
+        <h3>Usage by Endpoint</h3>
+        <div style="overflow-x:auto"><table id="tbl-endpoint" style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="text-align:left;color:var(--text2);border-bottom:1px solid var(--border)">
+            <th style="padding:8px">Endpoint</th><th style="padding:8px">Requests</th>
+            <th style="padding:8px">Prompt</th><th style="padding:8px">Completion</th>
+            <th style="padding:8px">Total Tokens</th><th style="padding:8px">Credits</th>
+          </tr></thead>
+          <tbody id="tbl-endpoint-body"></tbody>
+        </table></div>
+      </div>
+
+      <!-- By Day table -->
+      <div class="card">
+        <h3>Usage by Day</h3>
+        <div style="overflow-x:auto"><table id="tbl-day" style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr style="text-align:left;color:var(--text2);border-bottom:1px solid var(--border)">
+            <th style="padding:8px">Date</th><th style="padding:8px">Requests</th>
+            <th style="padding:8px">Prompt</th><th style="padding:8px">Completion</th>
+            <th style="padding:8px">Total Tokens</th><th style="padding:8px">Credits</th>
+          </tr></thead>
+          <tbody id="tbl-day-body"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Cost Estimates -->
+    <div class="card">
+      <h3>Credit Cost Estimates</h3>
+      <div id="cost-estimates" class="stats"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="panel">
+    <div class="card" style="max-width:500px">
+      <h3>User Settings</h3>
+      <div class="form-group"><label>Theme</label>
+        <select id="s-theme"><option value="light">Light</option><option value="dark">Dark</option></select>
+      </div>
+      <div class="form-group"><label>Language</label>
+        <select id="s-lang"><option value="it">Italiano</option><option value="en">English</option></select>
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px">
+        <label style="margin:0">Notifications</label>
+        <div class="toggle" id="s-notif" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <button class="btn" onclick="saveSettings()" style="margin-top:12px">Save Settings</button>
+      <div id="settings-response" class="response" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- GRAPH -->
+  <div id="graph" class="panel">
+    <div class="card" style="padding:12px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h3 style="margin:0">Knowledge Graph</h3>
+        <select id="graph-mode" style="width:160px" onchange="toggleGraphMode()">
+          <option value="company">Single Company</option>
+          <option value="national">National Graph</option>
+        </select>
+        <select id="graph-company" style="width:220px"></select>
+        <button class="btn btn-sm" onclick="loadGraph()">Load Graph</button>
+        <span id="graph-stats" style="font-size:12px;color:var(--text2)"></span>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <span style="font-size:11px;color:var(--text2)">Zoom:</span>
+          <button class="btn-sm btn-outline" onclick="graphZoom(1.3)">+</button>
+          <button class="btn-sm btn-outline" onclick="graphZoom(0.7)">-</button>
+          <button class="btn-sm btn-outline" onclick="graphReset()">Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;position:relative;margin-top:8px">
+      <canvas id="graph-canvas" width="1160" height="640" style="width:100%;display:block;cursor:grab"></canvas>
+      <div id="graph-tooltip" style="display:none;position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;pointer-events:none;box-shadow:var(--shadow);max-width:280px;z-index:10">
+      </div>
+      <div id="graph-legend" style="position:absolute;bottom:12px;left:12px;display:flex;gap:14px;font-size:11px;color:var(--text2)">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6c5ce7;vertical-align:middle"></span> Company</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#00b894;vertical-align:middle"></span> Document</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e84393;vertical-align:middle"></span> Category</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0984e3;vertical-align:middle"></span> Person</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e17055;vertical-align:middle"></span> Organization</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fdcb6e;vertical-align:middle"></span> Location</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#a29bfe;vertical-align:middle"></span> Other</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANDING PREVIEW -->
+  <div id="landing" class="panel">
+    <div class="card" style="padding:12px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h3 style="margin:0">Landing Page Graph Preview</h3>
+        <button class="btn btn-sm" onclick="loadLandingGraph()">Load Mock Graph</button>
+        <span id="landing-stats" style="font-size:12px;color:var(--text2)"></span>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <button class="btn-sm btn-outline" onclick="landingZoom(1.3)">+</button>
+          <button class="btn-sm btn-outline" onclick="landingZoom(0.7)">-</button>
+          <button class="btn-sm btn-outline" onclick="landingReset()">Reset</button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text2);margin-top:8px">Public endpoint — no auth, all data is fictional mock. This is what users see on the landing page hero section.</p>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;position:relative;margin-top:8px">
+      <canvas id="landing-canvas" width="1160" height="640" style="width:100%;display:block;cursor:grab"></canvas>
+      <div id="landing-tooltip" style="display:none;position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;pointer-events:none;box-shadow:var(--shadow);max-width:280px;z-index:10"></div>
+      <div style="position:absolute;bottom:12px;left:12px;display:flex;gap:14px;font-size:11px;color:var(--text2)">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6c5ce7;vertical-align:middle"></span> Company</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#00b894;vertical-align:middle"></span> Document</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0984e3;vertical-align:middle"></span> Person</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e17055;vertical-align:middle"></span> Organization</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fdcb6e;vertical-align:middle"></span> Location</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#a29bfe;vertical-align:middle"></span> Other</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div id="onboarding" class="panel">
+    <div class="row">
+      <div class="card" style="flex:0 0 400px">
+        <h3>Company Onboarding</h3>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Describe your company or paste your website URL. We'll extract a profile that will personalize your AI assistant.</p>
+        <div class="form-group">
+          <label>Input Mode</label>
+          <select id="ob-mode" onchange="toggleOnboardingMode()">
+            <option value="website">Website URL</option>
+            <option value="description">Free-text Description</option>
+          </select>
+        </div>
+        <div class="form-group" id="ob-url-group">
+          <label>Website URL</label>
+          <input id="ob-url" placeholder="https://www.example.com">
+        </div>
+        <div class="form-group" id="ob-desc-group" style="display:none">
+          <label>Company Description</label>
+          <textarea id="ob-desc" rows="5" placeholder="Describe your company: what you do, your industry, services, products, target market..."></textarea>
+        </div>
+        <button class="btn" onclick="analyzeOnboarding()" id="ob-analyze-btn">Analyze</button>
+        <div id="ob-status" style="margin-top:8px;font-size:12px;color:var(--text2)"></div>
+      </div>
+      <div class="card" style="flex:1">
+        <h3>Profile Preview</h3>
+        <div id="ob-preview" style="display:none">
+          <div class="form-row">
+            <div class="form-group"><label>Company Name</label><input id="ob-p-name"></div>
+            <div class="form-group"><label>Industry</label><input id="ob-p-industry"></div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea id="ob-p-desc" rows="3"></textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label>Services (comma-separated)</label><input id="ob-p-services"></div>
+            <div class="form-group"><label>Products (comma-separated)</label><input id="ob-p-products"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Target Market</label><input id="ob-p-target"></div>
+            <div class="form-group"><label>Location</label><input id="ob-p-location"></div>
+          </div>
+          <div class="form-group"><label>Website</label><input id="ob-p-website"></div>
+          <div style="display:flex;gap:12px;margin-top:16px">
+            <button class="btn-green btn" onclick="confirmOnboarding()" id="ob-confirm-btn">Confirm & Go to Dashboard</button>
+            <button class="btn-outline" onclick="resetOnboarding()">Reset</button>
+          </div>
+          <div id="ob-raw" style="display:none;margin-top:12px">
+            <label>Raw Extract</label>
+            <div class="response" id="ob-raw-text" style="max-height:200px"></div>
+          </div>
+        </div>
+        <div id="ob-empty" style="color:var(--text2);text-align:center;padding:40px;font-size:14px">
+          Analyze a company to see the profile preview here
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Onboarding Status</h3>
+      <div id="ob-status-info" class="response">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = () => document.getElementById('api-url').value;
+let currentCompanyId = null;
+let currentSessionId = null;
+let currentGCSessionId = null;
+let currentWSSessionId = null;
+let authToken = localStorage.getItem('lumio_token') || null;
+let authUser = null;
+try { authUser = JSON.parse(localStorage.getItem('lumio_user') || 'null'); } catch { authUser = null; }
+
+// ── API helper ──
+async function api(path, opts = {}) {
+  const url = `${API()}/api/v1${path}`;
+  const config = { headers: {}, ...opts };
+  if (authToken) config.headers['Authorization'] = `Bearer ${authToken}`;
+  if (opts.body && !(opts.body instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json';
+    config.body = JSON.stringify(opts.body);
+  }
+  const res = await fetch(url, config);
+  // Sliding token refresh
+  const refreshed = res.headers.get('X-Refreshed-Token');
+  if (refreshed) { authToken = refreshed; localStorage.setItem('lumio_token', refreshed); }
+  if (res.status === 204) return null;
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+  return data;
+}
+
+// ── Auth ──
+function updateAuthUI() {
+  const badge = document.getElementById('auth-badge');
+  const infoCard = document.getElementById('auth-info-card');
+  if (authToken && authUser) {
+    badge.textContent = authUser.display_name || authUser.email;
+    badge.className = 'badge ok';
+    badge.style.cursor = 'pointer';
+    infoCard.style.display = 'block';
+    document.getElementById('auth-user-name').textContent = authUser.display_name || '—';
+    document.getElementById('auth-user-email').textContent = authUser.email;
+    document.getElementById('auth-token-display').value = authToken;
+  } else {
+    badge.textContent = 'not logged in';
+    badge.className = 'badge err';
+    badge.style.cursor = 'pointer';
+    infoCard.style.display = 'none';
+  }
+}
+
+function setAuth(data) {
+  authToken = data.access_token;
+  authUser = data.user;
+  localStorage.setItem('lumio_token', authToken);
+  localStorage.setItem('lumio_user', JSON.stringify(authUser));
+  updateAuthUI();
+}
+
+async function doLogin() {
+  const el = document.getElementById('login-response');
+  try {
+    const body = {
+      email: document.getElementById('login-email').value,
+      password: document.getElementById('login-pass').value,
+    };
+    if (!body.email || !body.password) return alert('Email and password required');
+    const r = await api('/auth/login', { method: 'POST', body });
+    setAuth(r);
+    el.style.display = 'block';
+    el.textContent = 'Login successful!';
+    el.style.color = 'var(--green)';
+  } catch (e) { el.style.display = 'block'; el.textContent = `Error: ${e.message}`; el.style.color = 'var(--red)'; }
+}
+
+async function doRegister() {
+  const el = document.getElementById('reg-response');
+  try {
+    const body = {
+      email: document.getElementById('reg-email').value,
+      password: document.getElementById('reg-pass').value,
+      display_name: document.getElementById('reg-name').value || '',
+    };
+    if (!body.email || !body.password) return alert('Email and password required');
+    const r = await api('/auth/register', { method: 'POST', body });
+    setAuth(r);
+    el.style.display = 'block';
+    el.textContent = 'Registered & logged in!';
+    el.style.color = 'var(--green)';
+  } catch (e) { el.style.display = 'block'; el.textContent = `Error: ${e.message}`; el.style.color = 'var(--red)'; }
+}
+
+function doLogout() {
+  authToken = null;
+  authUser = null;
+  localStorage.removeItem('lumio_token');
+  localStorage.removeItem('lumio_user');
+  updateAuthUI();
+}
+
+// ── Tabs ──
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'rankings') loadRankings();
+  if (id === 'analytics') loadAnalytics();
+  if (id === 'settings') loadSettings();
+  if (id === 'documents') { populateCompanySelects(); loadDocuments(); }
+  if (id === 'chat') { populateCompanySelects(); loadSessions(); }
+  if (id === 'general-chat') loadGCSessions();
+  if (id === 'web-search') loadWSSessions();
+  if (id === 'graph') populateCompanySelects();
+  if (id === 'onboarding') loadOnboardingStatus();
+}
+
+// ── Health ──
+async function checkHealth() {
+  const badge = document.getElementById('health-badge');
+  try {
+    const d = await api('/health');
+    badge.textContent = `${d.service} v${d.version}`;
+    badge.className = 'badge ok';
+  } catch {
+    badge.textContent = 'offline';
+    badge.className = 'badge err';
+  }
+}
+
+// ── Theme ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  document.getElementById('theme-toggle').classList.toggle('on', next === 'dark');
+}
+
+// ── Companies ──
+async function loadCompanies() {
+  const search = document.getElementById('c-search').value;
+  const q = search ? `?search=${encodeURIComponent(search)}` : '';
+  try {
+    const d = await api(`/companies${q}`);
+    const list = document.getElementById('company-list');
+    if (!d.items.length) { list.innerHTML = '<p style="color:var(--text2);font-size:13px">No companies yet</p>'; return; }
+    list.innerHTML = d.items.map(c => {
+      const name = c.ragione_sociale || c.name;
+      const meta = [c.citta, c.provincia, c.piva].filter(Boolean).join(' · ') || c.industry || '';
+      const enriched = c.enriched_at ? '✓' : '';
+      return `
+      <div class="company-item ${c.id === currentCompanyId ? 'selected' : ''}" onclick="selectCompany('${c.id}')">
+        <div><div class="name">${esc(name)} ${enriched ? '<span style="color:var(--green);font-size:11px">enriched</span>' : ''}</div><div class="meta">${esc(meta)}</div></div>
+        <button class="btn-sm btn-red" onclick="event.stopPropagation();deleteCompany('${c.id}')">Del</button>
+      </div>`;
+    }).join('');
+  } catch (e) { showError('company-list', e); }
+}
+
+async function createCompany() {
+  try {
+    const body = {
+      name: document.getElementById('c-name').value,
+      piva: document.getElementById('c-piva').value || null,
+      industry: document.getElementById('c-industry').value || null,
+      description: document.getElementById('c-desc').value || null,
+      website: document.getElementById('c-website').value || null,
+    };
+    if (!body.name) return alert('Name required');
+    await api('/companies', { method: 'POST', body });
+    document.getElementById('c-name').value = '';
+    document.getElementById('c-piva').value = '';
+    document.getElementById('c-industry').value = '';
+    document.getElementById('c-desc').value = '';
+    document.getElementById('c-website').value = '';
+    loadCompanies();
+    populateCompanySelects();
+  } catch (e) { alert(e.message); }
+}
+
+async function selectCompany(id) {
+  currentCompanyId = id;
+  loadCompanies();
+  try {
+    const c = await api(`/companies/${id}`);
+    const btn = document.getElementById('enrich-btn');
+    btn.disabled = false;
+    btn.textContent = c.piva ? `Enrich (${c.piva})` : 'Enrich (P.IVA)';
+
+    const el = document.getElementById('company-detail');
+    const s = (k, fallback) => c[k] || fallback || '—';
+    const link = (url, label) => url ? `<a href="${esc(url)}" target="_blank" style="color:var(--accent2)">${esc(label || url)}</a>` : '—';
+    const badge = (text, color) => text ? `<span class="badge" style="background:${color}22;color:${color}">${esc(text)}</span>` : '';
+
+    let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">`;
+
+    // Registry
+    html += `<div>
+      <h4 style="color:var(--accent2);margin-bottom:8px;font-size:13px">Registry Data</h4>
+      <table style="font-size:13px;width:100%">
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0;white-space:nowrap">Ragione Sociale</td><td style="font-weight:600">${s('ragione_sociale')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">P.IVA</td><td><code>${s('piva')}</code></td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Forma Giuridica</td><td>${s('forma_giuridica')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Stato</td><td>${badge(c.stato_attivita, c.stato_attivita === 'ATTIVA' ? 'var(--green)' : 'var(--red)')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Indirizzo</td><td>${s('indirizzo')}, ${s('cap')} ${s('citta')} (${s('provincia')})</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Regione</td><td>${s('regione')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">ATECO</td><td>${s('ateco')} — ${s('ateco_description')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">PEC</td><td>${s('pec')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">SDI</td><td><code>${s('sdi')}</code></td></tr>
+      </table>
+    </div>`;
+
+    // Financials
+    html += `<div>
+      <h4 style="color:var(--accent2);margin-bottom:8px;font-size:13px">Financials & Contacts</h4>
+      <table style="font-size:13px;width:100%">
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Dipendenti</td><td style="font-weight:600">${c.dipendenti || '—'}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Fatturato</td><td style="font-weight:600">${c.fatturato ? '€' + (c.fatturato/1000000).toFixed(2) + 'M' : '—'}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Capitale Sociale</td><td>${c.capitale_sociale ? '€' + c.capitale_sociale.toLocaleString() : '—'}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Website</td><td>${link(c.website, c.website)}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Email</td><td>${s('email_aziendale')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Telefono</td><td>${s('telefono_aziendale')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">LinkedIn</td><td>${link(c.linkedin_url, 'LinkedIn')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Facebook</td><td>${link(c.facebook_url, 'Facebook')}</td></tr>
+        <tr><td style="color:var(--text2);padding:3px 8px 3px 0">Instagram</td><td>${link(c.instagram_url, 'Instagram')}</td></tr>
+      </table>
+    </div>`;
+
+    html += `</div>`;
+
+    // Description
+    if (c.descrizione) {
+      html += `<div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <h4 style="color:var(--accent2);margin-bottom:6px;font-size:13px">AI Description</h4>
+        <p style="font-size:13px;line-height:1.6">${esc(c.descrizione)}</p>
+        ${c.punti_chiave?.length ? '<div style="margin-top:8px;font-size:12px;color:var(--text2)"><strong>Key points:</strong> ' + c.punti_chiave.map(p => esc(p)).join(' · ') + '</div>' : ''}
+      </div>`;
+    }
+
+    // Enrichment status
+    if (c.enriched_at || c.openapi_enriched_at) {
+      html += `<div style="margin-top:12px;font-size:11px;color:var(--text2)">`;
+      if (c.openapi_enriched_at) html += `Registry enriched: ${new Date(c.openapi_enriched_at).toLocaleString()} · `;
+      if (c.enriched_at) html += `Web enriched: ${new Date(c.enriched_at).toLocaleString()} (${c.enrichment_duration_seconds || '?'}s) · `;
+      if (c.enriched_categories?.length) html += `Categories: ${c.enriched_categories.join(', ')}`;
+      html += `</div>`;
+    }
+
+    // Raw JSON toggle
+    html += `<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12px;color:var(--text2)">Raw JSON</summary>
+      <pre style="font-size:11px;margin-top:8px;max-height:300px;overflow-y:auto">${esc(JSON.stringify(c, null, 2))}</pre></details>`;
+
+    el.innerHTML = html;
+  } catch (e) { showError('company-detail', e); }
+}
+
+async function enrichCompany() {
+  if (!currentCompanyId) return alert('Select a company first');
+  const btn = document.getElementById('enrich-btn');
+  const detail = document.getElementById('company-detail');
+
+  // Ask for P.IVA if company doesn't have one
+  let vatNumber = null;
+  try {
+    const c = await api(`/companies/${currentCompanyId}`);
+    vatNumber = c.piva;
+  } catch {}
+
+  if (!vatNumber) {
+    vatNumber = prompt('Enter P.IVA (11 digits):');
+    if (!vatNumber) return;
+  }
+
+  btn.innerHTML = '<span class="spinner"></span>Enriching...';
+  btn.disabled = true;
+
+  try {
+    const r = await api(`/companies/${currentCompanyId}/enrich`, {
+      method: 'POST',
+      body: { vat_number: vatNumber },
+    });
+    detail.textContent = JSON.stringify(r, null, 2);
+    btn.textContent = `Enriched!`;
+    btn.disabled = false;
+    loadCompanies();
+  } catch (e) {
+    detail.textContent = `Enrichment error: ${e.message}`;
+    btn.textContent = 'Enrich (retry)';
+    btn.disabled = false;
+  }
+}
+
+async function deleteCompany(id) {
+  if (!confirm('Delete this company and all its data?')) return;
+  try {
+    await api(`/companies/${id}`, { method: 'DELETE' });
+    if (currentCompanyId === id) currentCompanyId = null;
+    loadCompanies();
+    populateCompanySelects();
+  } catch (e) { alert(e.message); }
+}
+
+// ── Company selects ──
+async function populateCompanySelects() {
+  try {
+    const d = await api('/companies');
+    const opts = d.items.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    ['d-company', 'chat-company', 'graph-company'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = opts || '<option>No companies</option>';
+    });
+  } catch {}
+}
+
+// ── Documents ──
+async function loadDocuments() {
+  const cid = document.getElementById('d-company')?.value;
+  if (!cid) return;
+  try {
+    const d = await api(`/companies/${cid}/documents`);
+    const list = document.getElementById('doc-list');
+    if (!d.items.length) { list.innerHTML = '<p style="color:var(--text2);font-size:13px">No documents yet</p>'; return; }
+    const icons = { pdf: '📄', docx: '📝', xlsx: '📊', pptx: '📑', txt: '📃', audio: '🎵', video: '🎬', image: '🖼️' };
+    list.innerHTML = d.items.map(doc => `
+      <div class="doc-item" onclick="selectDoc('${cid}','${doc.id}')" style="cursor:pointer">
+        <span class="icon">${icons[doc.doc_type] || '📎'}</span>
+        <div class="info">
+          <div class="name">${esc(doc.filename)}</div>
+          <div class="detail">${doc.doc_type} &middot; ${(doc.file_size/1024).toFixed(1)} KB &middot;
+            <span class="badge ${doc.processing_status === 'completed' ? 'ok' : doc.processing_status === 'failed' ? 'err' : 'pending'}">${doc.processing_status}</span>
+          </div>
+        </div>
+        <button class="btn-sm btn-red" onclick="event.stopPropagation();deleteDoc('${cid}','${doc.id}')">Del</button>
+      </div>
+    `).join('');
+  } catch (e) { showError('doc-list', e); }
+}
+
+async function uploadDocs() {
+  const cid = document.getElementById('d-company')?.value;
+  const files = document.getElementById('d-file').files;
+  if (!cid || !files.length) return alert('Select company and file(s)');
+  const status = document.getElementById('upload-status');
+  status.style.display = 'block';
+  status.textContent = 'Uploading...';
+  try {
+    if (files.length === 1) {
+      const fd = new FormData();
+      fd.append('file', files[0]);
+      const r = await api(`/companies/${cid}/documents`, { method: 'POST', body: fd });
+      status.textContent = JSON.stringify(r, null, 2);
+    } else {
+      const fd = new FormData();
+      for (const f of files) fd.append('files', f);
+      const r = await api(`/companies/${cid}/documents/multipart`, { method: 'POST', body: fd });
+      status.textContent = JSON.stringify(r, null, 2);
+    }
+    document.getElementById('d-file').value = '';
+    setTimeout(loadDocuments, 2000);
+  } catch (e) { status.textContent = `Error: ${e.message}`; }
+}
+
+async function selectDoc(cid, did) {
+  try {
+    const d = await api(`/companies/${cid}/documents/${did}`);
+    const icons = { pdf: '📄', docx: '📝', xlsx: '📊', pptx: '📑', txt: '📃', audio: '🎵', video: '🎬', image: '🖼️' };
+    const icon = icons[d.doc_type] || '📎';
+    const typeLabels = { audio: 'Transcription', video: 'Transcription', image: 'OCR Text' };
+    const contentLabel = typeLabels[d.doc_type] || 'Extracted Text';
+    const canView = d.processing_status === 'completed';
+    const detail = document.getElementById('doc-detail');
+    detail.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-size:28px">${icon}</span>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px;color:var(--text)">${esc(d.filename)}</div>
+          <div style="font-size:12px;color:var(--text2)">${d.doc_type.toUpperCase()} &middot; ${(d.file_size/1024).toFixed(1)} KB &middot; ${d.chunks_count} chunks &middot;
+            <span class="badge ${d.processing_status === 'completed' ? 'ok' : d.processing_status === 'failed' ? 'err' : 'pending'}">${d.processing_status}</span>
+          </div>
+        </div>
+        ${canView ? `<button class="btn" onclick="openDocViewer('${cid}','${did}')">View ${contentLabel}</button>` : ''}
+      </div>
+      ${d.error_message ? `<div style="color:var(--red);font-size:12px;margin-bottom:8px">Error: ${esc(d.error_message)}</div>` : ''}
+      <div style="font-size:11px;color:var(--text2)">Created: ${new Date(d.created_at).toLocaleString()}</div>
+    `;
+  } catch (e) { showError('doc-detail', e); }
+}
+
+async function openDocViewer(cid, did) {
+  const overlay = document.getElementById('doc-viewer-overlay');
+  const body = document.getElementById('doc-viewer-body');
+  const icons = { pdf: '📄', docx: '📝', xlsx: '📊', pptx: '📑', txt: '📃', audio: '🎵', video: '🎬', image: '🖼️' };
+  const typeLabels = { audio: 'Transcription', video: 'Transcription', image: 'OCR Result' };
+  body.textContent = 'Loading...';
+  overlay.style.display = 'flex';
+  try {
+    const d = await api(`/companies/${cid}/documents/${did}/content`);
+    document.getElementById('doc-viewer-icon').textContent = icons[d.doc_type] || '📎';
+    document.getElementById('doc-viewer-title').textContent = d.filename;
+    const label = typeLabels[d.doc_type] || 'Extracted Text';
+    document.getElementById('doc-viewer-badge').textContent = label;
+    document.getElementById('doc-viewer-badge').className = 'badge ok';
+    body.textContent = d.content || '(No content extracted)';
+  } catch (e) {
+    body.textContent = `Error: ${e.message}`;
+  }
+}
+
+function closeDocViewer() {
+  document.getElementById('doc-viewer-overlay').style.display = 'none';
+}
+
+async function deleteDoc(cid, did) {
+  if (!confirm('Delete document?')) return;
+  try { await api(`/companies/${cid}/documents/${did}`, { method: 'DELETE' }); loadDocuments(); } catch (e) { alert(e.message); }
+}
+
+// ── Chat ──
+async function loadSessions() {
+  const cid = document.getElementById('chat-company')?.value;
+  try {
+    const q = cid ? `?company_id=${cid}` : '';
+    const d = await api(`/chat/sessions${q}`);
+    const list = document.getElementById('session-list');
+    list.innerHTML = d.items.map(s => `
+      <div class="company-item ${s.id === currentSessionId ? 'selected' : ''}" onclick="selectSession('${s.id}')">
+        <div><div class="name">${esc(s.title)}</div><div class="meta">${new Date(s.created_at).toLocaleString()}</div></div>
+        <button class="btn-sm btn-red" onclick="event.stopPropagation();deleteSession('${s.id}')">Del</button>
+      </div>
+    `).join('') || '<p style="color:var(--text2);font-size:13px">No sessions</p>';
+  } catch {}
+}
+
+async function onChatCompanyChange() {
+  currentSessionId = null;
+  document.getElementById('chat-title').textContent = '';
+  document.getElementById('chat-box').innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Create or select a session to start chatting</div>';
+  const cid = document.getElementById('chat-company')?.value;
+  if (!cid) return;
+  try {
+    const s = await api('/chat/sessions', { method: 'POST', body: { company_id: cid, title: 'New Chat' } });
+    currentSessionId = s.id;
+    loadSessions();
+    loadChat();
+  } catch (e) { loadSessions(); }
+}
+
+async function createChatSession() {
+  const cid = document.getElementById('chat-company')?.value;
+  if (!cid) return alert('Select a company');
+  try {
+    const s = await api('/chat/sessions', { method: 'POST', body: { company_id: cid, title: 'New Chat' } });
+    currentSessionId = s.id;
+    loadSessions();
+    loadChat();
+  } catch (e) { alert(e.message); }
+}
+
+async function selectSession(id) {
+  currentSessionId = id;
+  loadSessions();
+  loadChat();
+}
+
+async function loadChat() {
+  if (!currentSessionId) return;
+  try {
+    const d = await api(`/chat/sessions/${currentSessionId}`);
+    document.getElementById('chat-title').textContent = d.title;
+    const box = document.getElementById('chat-box');
+    if (!d.messages?.length) {
+      box.innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Start a conversation</div>';
+      return;
+    }
+    box.innerHTML = d.messages.map(m => {
+      const body = m.role === 'assistant' ? renderMd(m.content) : esc(m.content);
+      let html = `<div class="msg ${m.role}">${body}`;
+      if (m.role === 'assistant' && m.sources) {
+        const vr = m.sources.vector_results || [];
+        if (vr.length) html += `<div class="sources">Sources: ${vr.length} document(s), best score: ${vr[0]?.score?.toFixed(3) || 'N/A'}</div>`;
+      }
+      return html + '</div>';
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+  } catch (e) { showError('chat-box', e); }
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-msg');
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!currentSessionId) {
+    const cid = document.getElementById('chat-company')?.value;
+    if (!cid) return alert('Select a company first');
+    const s = await api('/chat/sessions', { method: 'POST', body: { company_id: cid, title: 'New Chat' } });
+    currentSessionId = s.id;
+    loadSessions();
+  }
+
+  const box = document.getElementById('chat-box');
+  const placeholder = box.querySelector('div[style*="text-align:center"]');
+  if (placeholder) placeholder.remove();
+
+  appendUserBubble(box, msg);
+  input.value = '';
+
+  const bubble = createAssistantBubble(box);
+  scrollToBottom(box);
+
+  const btn = document.getElementById('chat-send-btn');
+  btn.innerHTML = '<span class="spinner"></span>Thinking...';
+  btn.disabled = true;
+
+  try {
+    const r = await streamSSE(`/chat/sessions/${currentSessionId}/messages`, { content: msg }, {
+      onChunk(text) {
+        setAssistantStreamingText(bubble, text);
+        scrollToBottom(box);
+      },
+      onSources(s) {
+        const vr = s?.vector_results || [];
+        setAssistantSources(bubble, vr.length ? `Sources: ${vr.length} doc(s)` : '');
+      }
+    });
+    finalizeAssistantBubble(bubble, r.content);
+    const vr = r.sources?.vector_results || [];
+    setAssistantSources(bubble, vr.length ? `Sources: ${vr.length} doc(s)` : '');
+    if (r.newTitle) { document.getElementById('chat-title').textContent = r.newTitle; loadSessions(); }
+  } catch (e) {
+    setAssistantError(bubble, e.message);
+  }
+  btn.innerHTML = 'Send';
+  btn.disabled = false;
+}
+
+async function deleteSession(id) {
+  if (!confirm('Delete session?')) return;
+  try { await api(`/chat/sessions/${id}`, { method: 'DELETE' }); if (currentSessionId===id) currentSessionId=null; loadSessions(); } catch (e) { alert(e.message); }
+}
+
+// ── General Chat ──
+async function loadGCSessions() {
+  try {
+    const d = await api('/general-chat/sessions');
+    const list = document.getElementById('gc-session-list');
+    list.innerHTML = d.items.map(s => `
+      <div class="company-item ${s.id === currentGCSessionId ? 'selected' : ''}" onclick="selectGCSession('${s.id}')">
+        <div><div class="name">${esc(s.title)}</div><div class="meta">${new Date(s.created_at).toLocaleString()}</div></div>
+        <button class="btn-sm btn-red" onclick="event.stopPropagation();deleteGCSession('${s.id}')">Del</button>
+      </div>
+    `).join('') || '<p style="color:var(--text2);font-size:13px">No sessions</p>';
+  } catch {}
+}
+
+async function createGCSession() {
+  try {
+    const s = await api('/general-chat/sessions', { method: 'POST', body: { title: 'General Chat' } });
+    currentGCSessionId = s.id;
+    loadGCSessions();
+    loadGCChat();
+  } catch (e) { alert(e.message); }
+}
+
+async function selectGCSession(id) {
+  currentGCSessionId = id;
+  loadGCSessions();
+  loadGCChat();
+}
+
+async function loadGCChat() {
+  if (!currentGCSessionId) return;
+  try {
+    const d = await api(`/general-chat/sessions/${currentGCSessionId}`);
+    document.getElementById('gc-title').textContent = d.title;
+    const box = document.getElementById('gc-box');
+    if (!d.messages?.length) {
+      box.innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Start a conversation</div>';
+      return;
+    }
+    box.innerHTML = d.messages.map(m => {
+      const body = m.role === 'assistant' ? renderMd(m.content) : esc(m.content);
+      let html = `<div class="msg ${m.role}">${body}`;
+      if (m.role === 'assistant' && m.sources) {
+        const vr = m.sources.vector_results || [];
+        if (vr.length) html += `<div class="sources">Sources: ${vr.length} document(s), best score: ${vr[0]?.score?.toFixed(3) || 'N/A'}</div>`;
+      }
+      return html + '</div>';
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+  } catch (e) { showError('gc-box', e); }
+}
+
+async function sendGC() {
+  const input = document.getElementById('gc-msg');
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!currentGCSessionId) {
+    const s = await api('/general-chat/sessions', { method: 'POST', body: { title: 'General Chat' } });
+    currentGCSessionId = s.id;
+    loadGCSessions();
+  }
+
+  const box = document.getElementById('gc-box');
+  const placeholder = box.querySelector('div[style*="text-align:center"]');
+  if (placeholder) placeholder.remove();
+
+  appendUserBubble(box, msg);
+  input.value = '';
+
+  const bubble = createAssistantBubble(box);
+  scrollToBottom(box);
+
+  const btn = document.getElementById('gc-send-btn');
+  btn.innerHTML = '<span class="spinner"></span>Thinking...';
+  btn.disabled = true;
+
+  try {
+    const r = await streamSSE(`/general-chat/sessions/${currentGCSessionId}/messages`, { content: msg }, {
+      onChunk(text) {
+        setAssistantStreamingText(bubble, text);
+        scrollToBottom(box);
+      },
+      onSources(s) {
+        const vr = s?.vector_results || [];
+        setAssistantSources(bubble, vr.length ? `Sources: ${vr.length} doc(s)` : '');
+      }
+    });
+    finalizeAssistantBubble(bubble, r.content);
+    const vr = r.sources?.vector_results || [];
+    setAssistantSources(bubble, vr.length ? `Sources: ${vr.length} doc(s)` : '');
+    if (r.newTitle) { document.getElementById('gc-title').textContent = r.newTitle; loadGCSessions(); }
+  } catch (e) {
+    setAssistantError(bubble, e.message);
+  }
+  btn.innerHTML = 'Send';
+  btn.disabled = false;
+}
+
+async function deleteGCSession(id) {
+  if (!confirm('Delete session?')) return;
+  try { await api(`/general-chat/sessions/${id}`, { method: 'DELETE' }); if (currentGCSessionId===id) currentGCSessionId=null; loadGCSessions(); } catch (e) { alert(e.message); }
+}
+
+// ── Web Search ──
+async function loadWSSessions() {
+  try {
+    const d = await api('/web-search/sessions');
+    const list = document.getElementById('ws-session-list');
+    list.innerHTML = d.items.map(s => `
+      <div class="company-item ${s.id === currentWSSessionId ? 'selected' : ''}" onclick="selectWSSession('${s.id}')">
+        <div><div class="name">${esc(s.title)}</div><div class="meta">${new Date(s.created_at).toLocaleString()}</div></div>
+        <button class="btn-sm btn-red" onclick="event.stopPropagation();deleteWSSession('${s.id}')">Del</button>
+      </div>
+    `).join('') || '<p style="color:var(--text2);font-size:13px">No sessions</p>';
+  } catch {}
+}
+
+async function createWSSession() {
+  try {
+    const s = await api('/web-search/sessions', { method: 'POST', body: { title: 'Client Discovery' } });
+    currentWSSessionId = s.id;
+    loadWSSessions();
+    loadWSChat();
+  } catch (e) { alert(e.message); }
+}
+
+async function selectWSSession(id) {
+  currentWSSessionId = id;
+  loadWSSessions();
+  loadWSChat();
+}
+
+async function loadWSChat() {
+  if (!currentWSSessionId) return;
+  try {
+    const d = await api(`/web-search/sessions/${currentWSSessionId}`);
+    document.getElementById('ws-title').textContent = d.title;
+    const box = document.getElementById('ws-box');
+    if (!d.messages?.length) {
+      renderWSProspects([]);
+      box.innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px;font-size:14px">Describe the service you need</div>';
+      return;
+    }
+    box.innerHTML = d.messages.map(m => {
+      const body = m.role === 'assistant' ? renderMd(m.content) : esc(m.content);
+      let html = `<div class="msg ${m.role}">${body}`;
+      if (m.role === 'assistant' && m.sources) {
+        const summary = summarizeWebSearchSources(m.sources);
+        if (summary) html += `<div class="sources">${summary}</div>`;
+      }
+      return html + '</div>';
+    }).join('');
+    const latestProspects = [...d.messages].reverse().find(m =>
+      m.role === 'assistant' && ((m.sources?.found_prospects || m.sources?.found_vendors || []).length)
+    );
+    renderWSProspects(latestProspects?.sources?.found_prospects || latestProspects?.sources?.found_vendors || []);
+    scrollToBottom(box);
+  } catch (e) { showError('ws-box', e); }
+}
+
+async function sendWS() {
+  const input = document.getElementById('ws-msg');
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!currentWSSessionId) {
+    const s = await api('/web-search/sessions', { method: 'POST', body: { title: 'Client Discovery' } });
+    currentWSSessionId = s.id;
+    loadWSSessions();
+  }
+
+  const box = document.getElementById('ws-box');
+  const placeholder = box.querySelector('div[style*="text-align:center"]');
+  if (placeholder) placeholder.remove();
+
+  appendUserBubble(box, msg);
+  input.value = '';
+
+  const bubble = createAssistantBubble(box);
+  scrollToBottom(box);
+
+  const btn = document.getElementById('ws-send-btn');
+  btn.innerHTML = '<span class="spinner"></span>Searching...';
+  btn.disabled = true;
+
+  let foundProspects = [];
+  renderWSProspects([]);
+
+  try {
+    const r = await streamSSE(`/web-search/sessions/${currentWSSessionId}/messages`, { content: msg }, {
+      onChunk(text) {
+        setAssistantStreamingText(bubble, text);
+        scrollToBottom(box);
+      },
+      onStatus(status) {
+        setAssistantStatus(bubble, status);
+        scrollToBottom(box);
+      },
+      onProspects(prospects) {
+        foundProspects = prospects || [];
+        renderWSProspects(foundProspects);
+      }
+    });
+    finalizeAssistantBubble(bubble, r.content);
+    setAssistantSources(bubble, summarizeWebSearchSources(r.sources));
+    renderWSProspects(foundProspects);
+
+    if ((!foundProspects || !foundProspects.length) && r.sources?.found_prospects?.length) {
+      foundProspects = r.sources.found_prospects;
+      renderWSProspects(foundProspects);
+    }
+    if (r.newTitle) { document.getElementById('ws-title').textContent = r.newTitle; loadWSSessions(); }
+  } catch (e) {
+    setAssistantError(bubble, e.message);
+  }
+  btn.innerHTML = 'Send';
+  btn.disabled = false;
+}
+
+async function addProspectManual(name, description, website) {
+  if (!currentWSSessionId) return;
+  try {
+    const r = await api(`/web-search/sessions/${currentWSSessionId}/add-client`, {
+      method: 'POST',
+      body: { company_name: name, description, website },
+    });
+    alert(`Added ${r.company_name} to Lumio (ID: ${r.company_id})`);
+    loadCompanies();
+    populateCompanySelects();
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function deleteWSSession(id) {
+  if (!confirm('Delete session?')) return;
+  try { await api(`/web-search/sessions/${id}`, { method: 'DELETE' }); if (currentWSSessionId===id) currentWSSessionId=null; loadWSSessions(); } catch (e) { alert(e.message); }
+}
+
+// ── Rankings ──
+async function loadRankings() {
+  try {
+    const d = await api('/rankings');
+    const list = document.getElementById('ranking-list');
+    if (!d.items?.length) { list.innerHTML = '<p style="color:var(--text2)">No rankings yet</p>'; return; }
+    list.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px"><tr style="text-align:left;color:var(--text2);border-bottom:1px solid var(--border)"><th style="padding:8px">#</th><th style="padding:8px">Client</th><th style="padding:8px">Client Score</th><th style="padding:8px">Data Score</th><th style="padding:8px">Revenue/yr</th><th style="padding:8px">Contracts</th><th style="padding:8px">Docs</th><th style="padding:8px"></th></tr>' +
+      d.items.map((r, i) => {
+        const cs = r.client_score || 0;
+        const csColor = cs >= 70 ? 'var(--red)' : cs >= 40 ? 'var(--orange)' : 'var(--green)';
+        const revenue = r.total_annual_revenue_eur ? `€${(r.total_annual_revenue_eur/1000).toFixed(0)}k` : '—';
+        return `<tr style="border-bottom:1px solid var(--border);cursor:pointer" onclick="loadClientDetail('${r.company_id}')">
+        <td style="padding:8px;color:var(--text2)">${i+1}</td>
+        <td style="padding:8px;font-weight:600">${esc(r.company_name)}</td>
+        <td style="padding:8px"><span class="badge" style="background:${csColor}22;color:${csColor}">${cs.toFixed(1)}</span></td>
+        <td style="padding:8px"><span class="badge ok">${r.ranking_score}</span><div style="background:var(--border);border-radius:4px;height:4px;width:60px;margin-top:4px"><div style="background:var(--green);border-radius:4px;height:100%;width:${(r.completeness||0)*100}%"></div></div></td>
+        <td style="padding:8px">${revenue}</td>
+        <td style="padding:8px">${r.contract_count || 0}</td>
+        <td style="padding:8px">${r.document_count}</td>
+        <td style="padding:8px"><button class="btn-sm btn-outline" onclick="event.stopPropagation();recomputeRank('${r.company_id}')">Recompute</button></td>
+      </tr>`}).join('') + '</table>';
+  } catch (e) { showError('ranking-list', e); }
+}
+
+async function loadClientDetail(companyId) {
+  const el = document.getElementById('dependency-detail');
+  try {
+    const d = await api(`/companies/${companyId}/contracts/client-score`);
+    if (!d.contracts?.length) { el.innerHTML = '<p style="color:var(--text2)">No contract analyses found for this client</p>'; return; }
+    el.innerHTML = `<div class="stats" style="margin-bottom:16px">
+      <div class="stat"><div class="value">${d.client_score}</div><div class="label">Client Score</div></div>
+      <div class="stat"><div class="value">€${(d.total_annual_revenue_eur/1000).toFixed(0)}k</div><div class="label">Revenue/yr</div></div>
+      <div class="stat"><div class="value">${d.contract_count}</div><div class="label">Contracts</div></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="text-align:left;color:var(--text2);border-bottom:1px solid var(--border)"><th style="padding:8px">Contract</th><th style="padding:8px">Score</th><th style="padding:8px">Revenue</th><th style="padding:8px">Retention</th><th style="padding:8px">SLA Exposure</th><th style="padding:8px">Criticality</th></tr>` +
+    d.contracts.map(v => {
+      const b = v.breakdown;
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:8px;font-weight:600">${esc(v.vendor_name)}</td>
+        <td style="padding:8px"><span class="badge" style="background:${v.client_score>=70?'var(--red)':v.client_score>=40?'var(--orange)':'var(--green)'}22;color:${v.client_score>=70?'var(--red)':v.client_score>=40?'var(--orange)':'var(--green)'}">${v.client_score}</span></td>
+        <td style="padding:8px">${b.revenue.toFixed(1)}/35</td>
+        <td style="padding:8px">${b.retention.toFixed(1)}/25</td>
+        <td style="padding:8px">${b.sla_exposure.toFixed(1)}/25</td>
+        <td style="padding:8px">${b.criticality.toFixed(1)}/15</td>
+      </tr>`;
+    }).join('') + '</table>';
+  } catch (e) { el.innerHTML = `<p style="color:var(--red)">${esc(e.message)}</p>`; }
+}
+
+async function recomputeRank(id) {
+  try { await api(`/rankings/${id}/recompute`, { method: 'POST' }); loadRankings(); } catch (e) { alert(e.message); }
+}
+
+// ── Analytics ──
+function fmtNum(n) { return (n||0).toLocaleString(); }
+
+async function loadAnalytics() {
+  const days = document.getElementById('a-days').value;
+  try {
+    const d = await api(`/analytics?days=${days}`);
+    const s = d.summary;
+    const p = d.plan || {};
+
+    // Credit balance
+    document.getElementById('cr-remaining').textContent = fmtNum(p.credits_remaining);
+    document.getElementById('cr-used').textContent = fmtNum(p.credits_used);
+    document.getElementById('cr-total').textContent = fmtNum(p.credits_total);
+    document.getElementById('cr-plan').textContent = (p.plan||{}).name || '--';
+    const pct = p.credits_total ? Math.min(100, (p.credits_used / p.credits_total * 100)) : 0;
+    document.getElementById('credit-bar').style.width = pct + '%';
+    document.getElementById('credit-bar').style.background = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--orange)' : 'var(--accent)';
+    document.getElementById('cr-pct').textContent = pct.toFixed(1) + '% used';
+
+    // Summary stats
+    document.getElementById('analytics-stats').innerHTML = `
+      <div class="stat"><div class="value">${fmtNum(s.credits_used)}</div><div class="label">Credits (period)</div></div>
+      <div class="stat"><div class="value">${fmtNum(s.total_tokens)}</div><div class="label">Total Tokens</div></div>
+      <div class="stat"><div class="value">${s.request_count}</div><div class="label">Requests</div></div>
+      <div class="stat"><div class="value">${fmtNum(s.total_prompt_tokens)}</div><div class="label">Prompt Tokens</div></div>
+      <div class="stat"><div class="value">${fmtNum(s.total_completion_tokens)}</div><div class="label">Completion Tokens</div></div>
+    `;
+
+    // Endpoint table
+    const epBody = document.getElementById('tbl-endpoint-body');
+    if (!d.by_endpoint.length) { epBody.innerHTML = '<tr><td colspan="6" style="padding:12px;color:var(--text2)">No data yet</td></tr>'; }
+    else {
+      epBody.innerHTML = d.by_endpoint.map(e => `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:8px;font-weight:600">${esc(e.endpoint)}</td>
+        <td style="padding:8px">${e.request_count}</td>
+        <td style="padding:8px">${fmtNum(e.prompt_tokens)}</td>
+        <td style="padding:8px">${fmtNum(e.completion_tokens)}</td>
+        <td style="padding:8px">${fmtNum(e.total_tokens)}</td>
+        <td style="padding:8px"><span class="badge ok">${e.credits}</span></td>
+      </tr>`).join('');
+    }
+
+    // Day table
+    const dayBody = document.getElementById('tbl-day-body');
+    if (!d.by_day.length) { dayBody.innerHTML = '<tr><td colspan="6" style="padding:12px;color:var(--text2)">No data yet</td></tr>'; }
+    else {
+      dayBody.innerHTML = d.by_day.map(e => `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:8px">${e.date}</td>
+        <td style="padding:8px">${e.request_count}</td>
+        <td style="padding:8px">${fmtNum(e.prompt_tokens)}</td>
+        <td style="padding:8px">${fmtNum(e.completion_tokens)}</td>
+        <td style="padding:8px">${fmtNum(e.total_tokens)}</td>
+        <td style="padding:8px"><span class="badge ok">${e.credits}</span></td>
+      </tr>`).join('');
+    }
+
+    // Cost estimates
+    const ce = d.cost_estimates || {};
+    document.getElementById('cost-estimates').innerHTML = `
+      <div class="stat"><div class="value">${ce.chat_message || '--'}</div><div class="label">Credits / Chat Msg</div></div>
+      <div class="stat"><div class="value">${ce.general_chat_message || '--'}</div><div class="label">Credits / General Chat</div></div>
+      <div class="stat"><div class="value">${ce.web_search || '--'}</div><div class="label">Credits / Web Search</div></div>
+      <div class="stat"><div class="value">${ce.document_processing || '--'}</div><div class="label">Credits / Document</div></div>
+      <div class="stat"><div class="value">${ce.audio_transcription_per_min || '--'}</div><div class="label">Credits / Min Audio</div></div>
+      <div class="stat"><div class="value">1 : ${fmtNum(d.credit_factor)}</div><div class="label">Credit : Tokens</div></div>
+    `;
+  } catch (e) { showError('analytics-stats', e); }
+}
+
+// ── Settings ──
+async function loadSettings() {
+  try {
+    const s = await api('/settings');
+    document.getElementById('s-theme').value = s.theme;
+    document.getElementById('s-lang').value = s.language;
+    document.getElementById('s-notif').classList.toggle('on', s.notifications_enabled);
+  } catch {}
+}
+
+async function saveSettings() {
+  const resp = document.getElementById('settings-response');
+  try {
+    const body = {
+      theme: document.getElementById('s-theme').value,
+      language: document.getElementById('s-lang').value,
+      notifications_enabled: document.getElementById('s-notif').classList.contains('on'),
+    };
+    const r = await api('/settings', { method: 'PATCH', body });
+    resp.style.display = 'block';
+    resp.textContent = JSON.stringify(r, null, 2);
+  } catch (e) { resp.style.display = 'block'; resp.textContent = `Error: ${e.message}`; }
+}
+
+// ── Helpers ──
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function showError(id, e) { document.getElementById(id).textContent = `Error: ${e.message}`; }
+function renderMd(s) {
+  if (!s) return '';
+  try { return typeof marked !== 'undefined' ? marked.parse(s, { breaks: true }) : esc(s).replace(/\n/g, '<br>'); }
+  catch { return esc(s).replace(/\n/g, '<br>'); }
+}
+
+function renderStreamingText(s) {
+  if (!s) return '';
+  try { return typeof marked !== 'undefined' ? marked.parse(s, { breaks: true }) : esc(s).replace(/\n/g, '<br>'); }
+  catch { return esc(s).replace(/\n/g, '<br>'); }
+}
+
+function scrollToBottom(el) {
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendUserBubble(box, text) {
+  const bubble = document.createElement('div');
+  bubble.className = 'msg user';
+  bubble.textContent = text;
+  box.appendChild(bubble);
+  return bubble;
+}
+
+function createAssistantBubble(box) {
+  const bubble = document.createElement('div');
+  bubble.className = 'msg assistant streaming-cursor';
+
+  const content = document.createElement('div');
+  content.className = 'msg-body';
+  bubble.appendChild(content);
+
+  const sources = document.createElement('div');
+  sources.className = 'sources';
+  sources.style.display = 'none';
+  bubble.appendChild(sources);
+
+  box.appendChild(bubble);
+  return { bubble, content, sources };
+}
+
+function setAssistantStreamingText(state, text) {
+  state.content.innerHTML = renderStreamingText(text);
+}
+
+function setAssistantStatus(state, text) {
+  state.content.innerHTML = `<em style="color:var(--text2)">${esc(text)}</em>`;
+}
+
+function setAssistantSources(state, text) {
+  if (!text) {
+    state.sources.style.display = 'none';
+    state.sources.textContent = '';
+    return;
+  }
+  state.sources.style.display = 'block';
+  state.sources.textContent = text;
+}
+
+function finalizeAssistantBubble(state, text) {
+  state.bubble.classList.remove('streaming-cursor');
+  state.content.innerHTML = renderMd(text || '');
+}
+
+function setAssistantError(state, message) {
+  state.bubble.classList.remove('streaming-cursor');
+  state.content.innerHTML = `<span style="color:var(--red)">Error: ${esc(message)}</span>`;
+  setAssistantSources(state, '');
+}
+
+function summarizeWebSearchSources(sources) {
+  const fv = sources?.found_prospects || sources?.found_vendors || [];
+  const ac = sources?.added_companies || [];
+  const parts = [];
+  if (fv.length) parts.push(`${fv.length} prospect(s) found`);
+  if (ac.length) parts.push(`${ac.length} added to Lumio`);
+  return parts.join(' | ');
+}
+
+function renderWSProspects(prospects) {
+  const wrap = document.getElementById('ws-vendors');
+  const list = document.getElementById('ws-vendor-list');
+  if (!prospects?.length) {
+    wrap.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  list.innerHTML = prospects.map(v => `
+    <div class="doc-item">
+      <div class="info">
+        <div class="name">${esc(v.name || 'Unknown')}</div>
+        <div class="detail">${esc(v.description || '')} ${v.website ? '| ' + esc(v.website) : ''}</div>
+      </div>
+      <span class="badge ok" style="white-space:nowrap">${((v.fit_score || v.relevance_score || 0) * 100).toFixed(0)}% fit</span>
+      <button class="btn-sm btn-green" onclick="addProspectManual('${esc(v.name)}','${esc(v.description || '')}','${esc(v.website || '')}')">Add</button>
+    </div>
+  `).join('');
+}
+
+function streamSSE(path, body, callbacks = {}) {
+  const { onChunk, onSources, onStatus, onProspects, onToolExecuted } = callbacks;
+  const controller = new AbortController();
+
+  const promise = (async () => {
+    let fullContent = '';
+    let sources = null;
+    let messageId = null;
+    let tokensUsed = 0;
+    let newTitle = null;
+
+    const url = `${API()}/api/v1${path}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (!data) continue;
+
+        let ev;
+        try { ev = JSON.parse(data); } catch { continue; }
+
+        switch (ev.type) {
+          case 'chunk':
+            if (typeof ev.data === 'string') {
+              fullContent += ev.data;
+              if (onChunk) onChunk(fullContent, ev.data);
+            }
+            break;
+          case 'sources':
+            sources = ev.data ?? null;
+            if (onSources) onSources(sources);
+            break;
+          case 'status':
+            if (onStatus) onStatus(ev.data);
+            break;
+          case 'prospects_found':
+            if (onProspects) onProspects(ev.data || []);
+            break;
+          case 'tool_executed':
+            if (onToolExecuted) onToolExecuted(ev.data);
+            break;
+          case 'done':
+            messageId = ev.data?.message_id || messageId;
+            if (typeof ev.data?.content === 'string') fullContent = ev.data.content;
+            if (ev.data && Object.prototype.hasOwnProperty.call(ev.data, 'sources')) sources = ev.data.sources;
+            if (typeof ev.data?.tokens_used === 'number') tokensUsed = ev.data.tokens_used;
+            if (ev.data?.new_title) newTitle = ev.data.new_title;
+            break;
+          case 'error':
+            throw new Error(ev.data || 'Stream error');
+        }
+      }
+    }
+
+    return { content: fullContent, sources, messageId, tokensUsed, newTitle };
+  })();
+
+  promise.abort = () => controller.abort();
+  return promise;
+}
+
+// ── Reusable Force Graph Engine ──
+const GRAPH_COLORS = {
+  company: '#6c5ce7', document: '#00b894', categoria: '#e84393',
+  PERSON: '#0984e3', ORGANIZATION: '#e17055', LOCATION: '#fdcb6e',
+  PRODUCT: '#00cec9', EVENT: '#fd79a8', CONCEPT: '#a29bfe',
+  METRIC: '#55efc4', DATE: '#fab1a0', UNKNOWN: '#a29bfe',
+};
+const GRAPH_RADIUS = { company: 22, document: 14, categoria: 16, entity: 10 };
+
+function graphColor(n) {
+  if (n.group === 'company') return GRAPH_COLORS.company;
+  if (n.group === 'document') return GRAPH_COLORS.document;
+  if (n.group === 'categoria') return GRAPH_COLORS.categoria;
+  return GRAPH_COLORS[n.type] || GRAPH_COLORS.UNKNOWN;
+}
+function graphRadius(n) { return GRAPH_RADIUS[n.group] || GRAPH_RADIUS.entity; }
+
+function createGraphInstance(canvasId, tooltipId) {
+  const state = { nodes: [], edges: [], transform: {x:0,y:0,s:1}, drag: null, hover: null, animId: null, alpha: 1, tick: 0 };
+
+  function load(data) {
+    const spread = data.nodes.length > 40 ? 1.8 : 1;
+    state.nodes = data.nodes.map(n => ({
+      ...n, x: 580 + (Math.random()-0.5)*400*spread, y: 320 + (Math.random()-0.5)*300*spread,
+      vx: 0, vy: 0, r: graphRadius(n), color: graphColor(n),
+    }));
+    state.nodes.filter(n => n.group === 'company').forEach(cn => { cn.x = 580; cn.y = 320; });
+    state.edges = data.edges.map(e => ({
+      ...e,
+      sourceNode: state.nodes.find(n => n.id === e.source),
+      targetNode: state.nodes.find(n => n.id === e.target),
+    })).filter(e => e.sourceNode && e.targetNode);
+    state.transform = {x:0,y:0,s:1};
+    state.alpha = 1; state.tick = 0;
+    if (state.animId) cancelAnimationFrame(state.animId);
+    animate();
+    return { nodes: state.nodes.length, edges: state.edges.length };
+  }
+
+  function simStep() {
+    const N = state.nodes.length;
+    const alpha = state.alpha = Math.max(state.alpha * 0.992, 0.15);
+    state.tick++;
+    const k = 0.03, repulse = N > 40 ? 20000 : 12000, damp = 0.82, center = {x:580,y:320};
+    const gravity = N > 40 ? 0.002 : 0.008;
+    const edgeLen = N > 40 ? 180 : 110, stiffDrag = 0.6;
+    const maxV = 6;
+    for (let i = 0; i < N; i++) {
+      for (let j = i+1; j < N; j++) {
+        let dx = state.nodes[j].x - state.nodes[i].x, dy = state.nodes[j].y - state.nodes[i].y;
+        let d2 = dx*dx + dy*dy || 1, d = Math.sqrt(d2);
+        const minDist = state.nodes[i].r + state.nodes[j].r + 8;
+        let f = repulse / d2 * alpha;
+        if (d < minDist) f += (minDist - d) * 1.5 * alpha;
+        let fx = dx / d * f, fy = dy / d * f;
+        state.nodes[i].vx -= fx; state.nodes[i].vy -= fy;
+        state.nodes[j].vx += fx; state.nodes[j].vy += fy;
+      }
+    }
+    for (const e of state.edges) {
+      let dx = e.targetNode.x - e.sourceNode.x, dy = e.targetNode.y - e.sourceNode.y;
+      let d = Math.sqrt(dx*dx + dy*dy) || 1;
+      let kk = (state.drag && (state.drag.node === e.sourceNode || state.drag.node === e.targetNode)) ? stiffDrag : k;
+      let f = (d - edgeLen) * kk * alpha, fx = dx/d * f, fy = dy/d * f;
+      e.sourceNode.vx += fx; e.sourceNode.vy += fy;
+      e.targetNode.vx -= fx; e.targetNode.vy -= fy;
+    }
+    for (const n of state.nodes) {
+      n.vx += (center.x - n.x) * gravity;
+      n.vy += (center.y - n.y) * gravity;
+      if (state.drag && state.drag.node === n) { n.vx = 0; n.vy = 0; continue; }
+      n.vx *= damp; n.vy *= damp;
+      const speed = Math.sqrt(n.vx*n.vx + n.vy*n.vy);
+      if (speed > maxV) { n.vx = n.vx/speed*maxV; n.vy = n.vy/speed*maxV; }
+      n.x += n.vx; n.y += n.vy;
+    }
+  }
+
+  function draw() {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(state.transform.x, state.transform.y);
+    ctx.scale(state.transform.s, state.transform.s);
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#2e3140';
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#e4e6eb';
+    ctx.lineWidth = 0.8;
+    for (const e of state.edges) {
+      ctx.strokeStyle = borderColor; ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(e.sourceNode.x, e.sourceNode.y); ctx.lineTo(e.targetNode.x, e.targetNode.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    for (const n of state.nodes) {
+      ctx.fillStyle = n.color; ctx.shadowColor = n.color;
+      ctx.shadowBlur = n === state.hover ? 16 : 6;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r * (n === state.hover ? 1.25 : 1), 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+      const fontSize = n.group === 'company' ? 11 : n.group === 'document' || n.group === 'categoria' ? 9 : 8;
+      ctx.font = `${n.group==='company'||n.group==='categoria'?'bold ':''}${fontSize}px 'Segoe UI',system-ui,sans-serif`;
+      ctx.fillStyle = textColor; ctx.textAlign = 'center';
+      const label = n.label.length > 20 ? n.label.slice(0,18)+'..' : n.label;
+      ctx.fillText(label, n.x, n.y + n.r + fontSize + 2);
+    }
+    ctx.restore();
+  }
+
+  function animate() { simStep(); draw(); state.animId = requestAnimationFrame(animate); }
+
+  // Interaction
+  const c = document.getElementById(canvasId);
+  let panStart = null;
+  function toGraph(ex, ey) {
+    const r = c.getBoundingClientRect(), sx = c.width/r.width, sy = c.height/r.height;
+    return { x: ((ex-r.left)*sx - state.transform.x)/state.transform.s, y: ((ey-r.top)*sy - state.transform.y)/state.transform.s };
+  }
+  function findNode(gx, gy) {
+    for (let i = state.nodes.length-1; i >= 0; i--) { const n = state.nodes[i]; if ((gx-n.x)**2+(gy-n.y)**2 <= (n.r+4)**2) return n; }
+    return null;
+  }
+  c.addEventListener('mousedown', e => {
+    const g = toGraph(e.clientX, e.clientY), n = findNode(g.x, g.y);
+    if (n) { state.drag = {node:n, ox:n.x-g.x, oy:n.y-g.y}; c.style.cursor='grabbing'; }
+    else { panStart = {mx:e.clientX, my:e.clientY, tx:state.transform.x, ty:state.transform.y}; }
+  });
+  c.addEventListener('mousemove', e => {
+    const g = toGraph(e.clientX, e.clientY);
+    if (state.drag) { state.drag.node.x=g.x+state.drag.ox; state.drag.node.y=g.y+state.drag.oy; state.drag.node.vx=0; state.drag.node.vy=0; return; }
+    if (panStart) { state.transform.x=panStart.tx+(e.clientX-panStart.mx); state.transform.y=panStart.ty+(e.clientY-panStart.my); return; }
+    const n = findNode(g.x, g.y); state.hover = n; c.style.cursor = n ? 'pointer' : 'grab';
+    const tip = document.getElementById(tooltipId);
+    if (n) {
+      const rect = c.getBoundingClientRect(); tip.style.display='block';
+      tip.style.left=(e.clientX-rect.left+14)+'px'; tip.style.top=(e.clientY-rect.top-10)+'px';
+      let html = `<strong>${esc(n.label)}</strong><br><span style="color:var(--text2)">${n.group}`;
+      if (n.type) html += ` (${n.type})`; html += '</span>';
+      if (n.description) html += `<br>${esc(n.description)}`;
+      html += `<br><span style="color:var(--text2)">${state.edges.filter(e=>e.sourceNode===n||e.targetNode===n).length} connection(s)</span>`;
+      tip.innerHTML = html;
+    } else { tip.style.display='none'; }
+  });
+  c.addEventListener('mouseup', () => { state.drag=null; panStart=null; c.style.cursor='grab'; });
+  c.addEventListener('mouseleave', () => { state.drag=null; panStart=null; state.hover=null; document.getElementById(tooltipId).style.display='none'; });
+  c.addEventListener('wheel', e => { e.preventDefault(); const f=e.deltaY<0?1.1:0.9; state.transform.s=Math.max(0.2,Math.min(5,state.transform.s*f)); }, {passive:false});
+
+  return { load, zoom(f){ state.transform.s=Math.max(0.2,Math.min(5,state.transform.s*f)); }, reset(){ state.transform={x:0,y:0,s:1}; } };
+}
+
+// ── Graph instances ──
+const graphMain = createGraphInstance('graph-canvas', 'graph-tooltip');
+const graphLanding = createGraphInstance('landing-canvas', 'landing-tooltip');
+
+// ── Graph Mode Toggle ──
+function toggleGraphMode() {
+  const mode = document.getElementById('graph-mode').value;
+  document.getElementById('graph-company').style.display = mode === 'company' ? '' : 'none';
+}
+
+// ── Company / National Graph ──
+async function loadGraph() {
+  const mode = document.getElementById('graph-mode').value;
+  const stats = document.getElementById('graph-stats');
+  stats.textContent = 'Loading...';
+  try {
+    let data;
+    if (mode === 'national') {
+      data = await api('/analytics/graph/national');
+    } else {
+      const cid = document.getElementById('graph-company')?.value;
+      if (!cid) return alert('Select a company');
+      data = await api(`/analytics/graph/${cid}`);
+    }
+    const s = graphMain.load(data);
+    stats.textContent = `${s.nodes} nodes, ${s.edges} edges`;
+  } catch (e) { stats.textContent = `Error: ${e.message}`; }
+}
+function graphZoom(f) { graphMain.zoom(f); }
+function graphReset() { graphMain.reset(); }
+
+// ── Landing Graph ──
+async function loadLandingGraph() {
+  const stats = document.getElementById('landing-stats');
+  stats.textContent = 'Loading...';
+  try {
+    const data = await api('/landing/graph');
+    const s = graphLanding.load(data);
+    stats.textContent = `${s.nodes} nodes, ${s.edges} edges`;
+  } catch (e) { stats.textContent = `Error: ${e.message}`; }
+}
+function landingZoom(f) { graphLanding.zoom(f); }
+function landingReset() { graphLanding.reset(); }
+
+// ── Onboarding ──
+function toggleOnboardingMode() {
+  const mode = document.getElementById('ob-mode').value;
+  document.getElementById('ob-url-group').style.display = mode === 'website' ? 'block' : 'none';
+  document.getElementById('ob-desc-group').style.display = mode === 'description' ? 'block' : 'none';
+}
+
+async function analyzeOnboarding() {
+  const mode = document.getElementById('ob-mode').value;
+  const btn = document.getElementById('ob-analyze-btn');
+  const status = document.getElementById('ob-status');
+
+  let body;
+  if (mode === 'website') {
+    const url = document.getElementById('ob-url').value.trim();
+    if (!url) return alert('Enter a website URL');
+    body = { website_url: url };
+  } else {
+    const desc = document.getElementById('ob-desc').value.trim();
+    if (!desc) return alert('Enter a company description');
+    body = { description: desc };
+  }
+
+  btn.innerHTML = '<span class="spinner"></span>Analyzing...';
+  btn.disabled = true;
+  status.textContent = 'Scraping and analyzing with AI...';
+
+  try {
+    const r = await api('/onboarding/analyze', { method: 'POST', body });
+    const p = r.profile;
+
+    document.getElementById('ob-p-name').value = p.name || '';
+    document.getElementById('ob-p-industry').value = p.industry || '';
+    document.getElementById('ob-p-desc').value = p.description || '';
+    document.getElementById('ob-p-services').value = (p.services || []).join(', ');
+    document.getElementById('ob-p-products').value = (p.products || []).join(', ');
+    document.getElementById('ob-p-target').value = p.target_market || '';
+    document.getElementById('ob-p-location').value = p.location || '';
+    document.getElementById('ob-p-website').value = p.website || '';
+
+    document.getElementById('ob-preview').style.display = 'block';
+    document.getElementById('ob-empty').style.display = 'none';
+
+    if (r.raw_extract) {
+      document.getElementById('ob-raw').style.display = 'block';
+      document.getElementById('ob-raw-text').textContent = r.raw_extract;
+    }
+
+    status.textContent = `Profile extracted from ${r.source}. Review and confirm below.`;
+  } catch (e) {
+    status.textContent = `Error: ${e.message}`;
+  }
+  btn.innerHTML = 'Analyze';
+  btn.disabled = false;
+}
+
+async function confirmOnboarding() {
+  const btn = document.getElementById('ob-confirm-btn');
+  const svc = document.getElementById('ob-p-services').value;
+  const prd = document.getElementById('ob-p-products').value;
+
+  const body = {
+    profile: {
+      name: document.getElementById('ob-p-name').value,
+      industry: document.getElementById('ob-p-industry').value || null,
+      description: document.getElementById('ob-p-desc').value || null,
+      services: svc ? svc.split(',').map(s => s.trim()).filter(Boolean) : [],
+      products: prd ? prd.split(',').map(s => s.trim()).filter(Boolean) : [],
+      target_market: document.getElementById('ob-p-target').value || null,
+      location: document.getElementById('ob-p-location').value || null,
+      website: document.getElementById('ob-p-website').value || null,
+    }
+  };
+
+  if (!body.profile.name) return alert('Company name is required');
+
+  btn.innerHTML = '<span class="spinner"></span>Saving...';
+  btn.disabled = true;
+
+  try {
+    const r = await api('/onboarding/confirm', { method: 'POST', body });
+    document.getElementById('ob-status').textContent = r.message;
+    loadOnboardingStatus();
+    loadCompanies();
+    populateCompanySelects();
+    alert('Onboarding completed! Your AI assistant is now personalized.');
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+  btn.innerHTML = 'Confirm & Go to Dashboard';
+  btn.disabled = false;
+}
+
+function resetOnboarding() {
+  document.getElementById('ob-preview').style.display = 'none';
+  document.getElementById('ob-empty').style.display = 'block';
+  document.getElementById('ob-raw').style.display = 'none';
+  document.getElementById('ob-status').textContent = '';
+  document.getElementById('ob-url').value = '';
+  document.getElementById('ob-desc').value = '';
+}
+
+async function loadOnboardingStatus() {
+  const el = document.getElementById('ob-status-info');
+  try {
+    const r = await api('/onboarding/status');
+    if (r.onboarding_completed) {
+      el.textContent = `Onboarding completed. Company ID: ${r.company_id}`;
+    } else {
+      el.textContent = 'Onboarding not yet completed.';
+    }
+  } catch (e) { el.textContent = `Error: ${e.message}`; }
+}
+
+// ── Init ──
+document.getElementById('theme-toggle').classList.add('on');
+updateAuthUI();
+checkHealth();
+loadCompanies();
+populateCompanySelects();
+</script>
+</body>
+</html>

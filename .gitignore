@@ -1,0 +1,37 @@
+.idea
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# Mock data
+mock_data/
+
+# Internal docs
+BUSINESS_MODEL.md

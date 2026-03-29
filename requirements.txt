@@ -1,0 +1,46 @@
+# Core
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.4
+pydantic-settings==2.7.1
+email-validator==2.2.0
+
+# MongoDB
+motor==3.6.0
+
+# Vector DB
+qdrant-client==1.12.1
+
+# Graph DB
+neo4j==5.27.0
+
+# AI / LLM
+openai==1.58.1
+tiktoken==0.8.0
+langgraph>=0.2.0
+langchain-core>=0.3.0
+
+# Auth
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.1
+
+# File processing
+python-docx==1.1.2
+PyPDF2==3.0.1
+openpyxl==3.1.5
+python-pptx==1.0.2
+
+# Audio/Video
+pydub==0.25.1
+
+# HTTP client
+httpx==0.28.1
+
+# Web search
+duckduckgo-search>=7.0.0
+
+# Utils
+python-dotenv==1.0.1
+aiofiles==24.1.0

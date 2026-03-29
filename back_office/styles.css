@@ -1,0 +1,371 @@
+/* ── Design tokens from ui_components ── */
+:root {
+  --background: #0c0c0c;
+  --foreground: #ffffff;
+  --card: #1f1f1f;
+  --card-foreground: #ffffff;
+  --primary: #7966ff;
+  --primary-foreground: #ffffff;
+  --secondary: #22cfff;
+  --secondary-foreground: #000000;
+  --muted: #141414;
+  --muted-foreground: #a9a9a9;
+  --accent: #1f1f1f;
+  --accent-foreground: #ffffff;
+  --destructive: #ff4b44;
+  --destructive-foreground: #ffffff;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #7966ff;
+  --radius: 1.25rem;
+  --success: #22cfff;
+  --warning: #7966ff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::selection { background: rgba(121,102,255,0.3); color: #fff; }
+
+/* ── Liquid components from ui_components ── */
+.liquid-card {
+  position: relative;
+  background: rgba(255,255,255,0.063);
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background-clip: padding-box;
+}
+.liquid-card::before {
+  content: ""; position: absolute; inset: 0; border-radius: 24px; padding: 1px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 7%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.05) 67%, rgba(255,255,255,0.12) 87%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+
+.liquid-card-strong {
+  position: relative;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background-clip: padding-box;
+}
+.liquid-card-strong::before {
+  content: ""; position: absolute; inset: 0; border-radius: 24px; padding: 1.5px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 7%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.1) 67%, rgba(255,255,255,0.25) 87%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+
+.liquid-input {
+  position: relative;
+  height: 48px;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.liquid-input::before {
+  content: ""; position: absolute; inset: 0; border-radius: 14px; padding: 1px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 7%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.06) 67%, rgba(255,255,255,0.18) 87%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+.liquid-input:focus-within::before {
+  background: linear-gradient(160deg, rgba(121,102,255,0.4) 0%, rgba(121,102,255,0.15) 7%, rgba(121,102,255,0) 50%, rgba(121,102,255,0.15) 67%, rgba(121,102,255,0.4) 87%);
+}
+.liquid-input input, .liquid-input select, .liquid-input textarea {
+  width: 100%; height: 100%; padding: 0 16px;
+  background: transparent; border: none; color: var(--foreground);
+  font-size: 14px; font-family: inherit; outline: none;
+}
+.liquid-input textarea { padding: 12px 16px; height: auto; min-height: 80px; resize: vertical; }
+
+.liquid-card-btn {
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background-clip: padding-box;
+}
+.liquid-card-btn::before {
+  content: ""; position: absolute; inset: 0; border-radius: 12px; padding: 1px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 7%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.05) 67%, rgba(255,255,255,0.12) 87%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+
+/* ── Autofill fix ── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.06) inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ── Login Screen ── */
+.login-screen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 20px;
+}
+.login-card {
+  width: 100%; max-width: 400px; padding: 40px;
+}
+.login-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 4px;
+}
+.login-title span {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.login-subtitle {
+  color: var(--muted-foreground); font-size: 14px; margin-bottom: 28px;
+}
+.login-error {
+  color: var(--destructive); font-size: 13px; margin-top: 12px; min-height: 20px;
+}
+
+/* ── Buttons ── */
+button { cursor: pointer; border: none; font-family: inherit; font-size: 13px; font-weight: 600; }
+
+.btn-primary {
+  width: 100%; padding: 12px; border-radius: 14px;
+  background: var(--primary); color: var(--primary-foreground);
+  font-size: 14px; font-weight: 600; transition: all 0.2s;
+}
+.btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+.btn-action {
+  padding: 8px 16px; border-radius: 12px;
+  background: var(--primary); color: var(--primary-foreground);
+  transition: all 0.2s;
+}
+.btn-action:hover { filter: brightness(1.15); }
+
+.btn-outline {
+  padding: 8px 16px; border-radius: 12px;
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted-foreground); transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+.btn-destructive {
+  padding: 6px 12px; border-radius: 10px;
+  background: var(--destructive); color: var(--destructive-foreground);
+  font-size: 12px; transition: all 0.2s;
+}
+.btn-destructive:hover { filter: brightness(1.15); }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-ghost {
+  padding: 6px 12px; border-radius: 10px;
+  background: transparent; color: var(--muted-foreground);
+  transition: all 0.2s;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.06); color: var(--foreground); }
+
+/* ── Badge ── */
+.badge {
+  font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; white-space: nowrap;
+}
+.badge-ok { background: rgba(34,207,255,0.15); color: var(--success); }
+.badge-err { background: rgba(255,75,68,0.15); color: var(--destructive); }
+.badge-pending { background: rgba(121,102,255,0.15); color: var(--primary); }
+
+/* ── Form ── */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--muted-foreground); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.form-row { display: flex; gap: 12px; }
+.form-row > * { flex: 1; }
+
+/* ── App Shell ── */
+.app { display: flex; height: 100vh; }
+
+.sidebar {
+  width: 240px; min-width: 240px;
+  background: var(--muted);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  padding: 20px 0;
+}
+.sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
+.logo { font-size: 20px; font-weight: 700; }
+.logo span {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.nav-item {
+  width: 100%; text-align: left; padding: 10px 14px; border-radius: 12px;
+  background: transparent; color: var(--muted-foreground);
+  font-size: 13px; font-weight: 500; transition: all 0.15s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: var(--foreground); }
+.nav-item.active { background: rgba(121,102,255,0.15); color: var(--primary); }
+
+.sidebar-footer {
+  padding: 16px 20px 0; border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.api-url-group label { font-size: 10px; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 28px; border-bottom: 1px solid var(--border);
+  background: var(--muted);
+}
+.topbar h2 { font-size: 18px; font-weight: 700; }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+
+.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+/* ── Data Table ── */
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.data-table th {
+  text-align: left; padding: 10px 12px;
+  color: var(--muted-foreground); font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--background);
+}
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.data-table tr:hover td { background: rgba(255,255,255,0.03); }
+.data-table .actions { display: flex; gap: 6px; white-space: nowrap; }
+
+/* ── Cards / Panels — all use liquid ── */
+.content .liquid-card,
+.content .liquid-card-strong {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.content .liquid-card h3,
+.content .liquid-card-strong h3 {
+  font-size: 14px; font-weight: 700; margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.stat-card.liquid-card-btn {
+  padding: 16px; text-align: center;
+}
+.stat-card .value {
+  font-size: 24px; font-weight: 700; color: var(--primary);
+}
+.stat-card .label {
+  font-size: 11px; color: var(--muted-foreground); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-top: 4px;
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; font-size: 13px; color: var(--muted-foreground);
+}
+.pagination-buttons { display: flex; gap: 6px; }
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; animation: fadeIn 0.15s;
+}
+.modal {
+  width: 90%; max-width: 700px; max-height: 85vh;
+  display: flex; flex-direction: column;
+  animation: modalIn 0.2s;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 16px; font-weight: 700; margin: 0; }
+.modal-body { flex: 1; overflow-y: auto; padding: 24px; }
+.modal-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding: 16px 24px; border-top: 1px solid var(--border);
+}
+
+/* ── JSON viewer (liquid-input style) ── */
+.json-view {
+  position: relative;
+  background: rgba(255,255,255,0.06);
+  border: none; border-radius: 14px;
+  padding: 14px 16px;
+  font-family: 'Cascadia Code','Fira Code', monospace; font-size: 12px;
+  white-space: pre-wrap; word-break: break-all; max-height: 400px;
+  overflow-y: auto; color: var(--muted-foreground); line-height: 1.6;
+}
+.json-view::before {
+  content: ""; position: absolute; inset: 0; border-radius: 14px; padding: 1px;
+  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 7%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.06) 67%, rgba(255,255,255,0.18) 87%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+}
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+  vertical-align: middle; margin-right: 6px;
+}
+.loading { opacity: 0.5; pointer-events: none; }
+
+/* ── Animations ── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.toolbar .liquid-input { height: 36px; flex: 1; min-width: 200px; }
+.toolbar .liquid-input input { font-size: 13px; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 40px; color: var(--muted-foreground); font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sidebar { width: 60px; min-width: 60px; }
+  .sidebar-header, .sidebar-footer, .nav-item { padding: 8px; font-size: 0; }
+  .content { padding: 16px; }
+}

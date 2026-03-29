@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumio Backoffice</title>
+<link rel="icon" href="../asset/lumio_ic.ico" type="image/x-icon">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card liquid-card-strong">
+    <img src="../asset/lumio_ic.png" alt="Lumio" style="width:48px;height:48px;margin-bottom:12px">
+    <h1 class="login-title">Lumio <span>Backoffice</span></h1>
+    <p class="login-subtitle">Admin panel</p>
+    <div class="form-group">
+      <label>Email</label>
+      <div class="liquid-input">
+        <input id="login-email" type="email" placeholder="admin@lumio.local">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="liquid-input">
+        <input id="login-password" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Login</button>
+    <div id="login-error" class="login-error"></div>
+  </div>
+</div>
+
+<!-- App Shell -->
+<div id="app" class="app" style="display:none">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <img src="../asset/lumio_ic.png" alt="Lumio" style="width:28px;height:28px">
+        <h2 class="logo">Lumio <span>BO</span></h2>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard">Dashboard</button>
+      <button class="nav-item" data-page="graph">Knowledge Graph</button>
+      <button class="nav-item" data-page="users">Users</button>
+      <button class="nav-item" data-page="companies">Companies</button>
+      <button class="nav-item" data-page="documents">Documents</button>
+      <button class="nav-item" data-page="chat-sessions">Chat Sessions</button>
+      <button class="nav-item" data-page="analytics">Analytics</button>
+      <button class="nav-item" data-page="collections">Raw Collections</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="api-url-group">
+        <label>API URL</label>
+        <div class="liquid-input" style="height:36px">
+          <input id="api-url" style="font-size:11px">
+        </div>
+      </div>
+      <button class="btn-outline btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h2 id="page-title">Dashboard</h2>
+      <div class="topbar-right">
+        <span id="health-badge" class="badge badge-pending">checking...</span>
+        <span id="bo-user-badge" class="badge badge-ok"></span>
+      </div>
+    </header>
+    <div class="content" id="page-content"></div>
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="js/app.js"></script>
+<script src="js/pages/dashboard.js"></script>
+<script src="js/pages/users.js"></script>
+<script src="js/pages/companies.js"></script>
+<script src="js/pages/documents.js"></script>
+<script src="js/pages/chat_sessions.js"></script>
+<script src="js/pages/analytics.js"></script>
+<script src="js/pages/graph.js"></script>
+<script src="js/pages/collections.js"></script>
+<script>
+  // Set API URL — detect base path from /backoffice/ location
+  (function() {
+    const path = window.location.pathname;
+    const idx = path.indexOf('/backoffice');
+    const base = idx > 0 ? path.slice(0, idx) : '';
+    document.getElementById('api-url').value = window.location.origin + base || 'http://localhost:8000';
+  })();
+  // Init
+  if (sessionStorage.getItem('bo_auth')) {
+    showApp();
+  }
+</script>
+</body>
+</html>
